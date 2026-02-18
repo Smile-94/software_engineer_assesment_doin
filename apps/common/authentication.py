@@ -1,10 +1,10 @@
 import logging
 
-from _library.functions.generate_token import hash_token, validate_token_signature
 from django.utils.timezone import now
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
+from _library.functions.generate_token import hash_token, validate_token_signature
 from apps.user.models.user_model import UserDeviceToken
 
 logger = logging.getLogger(__name__)

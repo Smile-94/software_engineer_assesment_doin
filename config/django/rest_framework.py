@@ -31,6 +31,7 @@ class RestFrameworkSettings(BaseSettings):
     # Basic  → legacy / internal tools
     # Token  → programmatic access
     DEFAULT_AUTHENTICATION_CLASSES: list[str] = [
+        "apps.common.authentication.DeviceTokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.TokenAuthentication",
@@ -65,7 +66,7 @@ class RestFrameworkSettings(BaseSettings):
     DEFAULT_RENDERER_CLASSES: list[str] = ["rest_framework.renderers.JSONRenderer"]
 
     # Centralized exception handling for consistent error responses
-    EXCEPTION_HANDLER: str = "config.django.rest_framework.exception_handler"
+    EXCEPTION_HANDLER: str = "apps.common.exception_handler.exception_handler"
 
     # Pagination strategy (limit/offset works best for large datasets)
     DEFAULT_PAGINATION_CLASS: str = "rest_framework.pagination.LimitOffsetPagination"
@@ -85,18 +86,24 @@ class RestFrameworkSettings(BaseSettings):
     @model_validator(mode="after")
     def set_default_permissions(self):
         if env_config.ENVIRONMENT == EnvironmentChoices.PRODUCTION.value:
-            self.DEFAULT_PERMISSION_CLASSES = ["rest_framework.permissions.IsAuthenticated"]
+            self.DEFAULT_PERMISSION_CLASSES = [
+                "rest_framework.permissions.AllowAny",
+                "apps.common.authentication.DeviceTokenAuthentication",
+            ]
         else:
-            self.DEFAULT_PERMISSION_CLASSES = ["rest_framework.permissions.AllowAny"]
+            self.DEFAULT_PERMISSION_CLASSES = [
+                "rest_framework.permissions.AllowAny",
+                "apps.common.authentication.DeviceTokenAuthentication",
+            ]
         return self
 
-    # Default renderer for browsable API
-    @model_validator(mode="after")
-    def set_default_renderer(self):
-        # Default renderer for browsable API
-        if env_config.ENVIRONMENT != EnvironmentChoices.PRODUCTION.value:
-            self.DEFAULT_RENDERER_CLASSES = ["rest_framework.renderers.BrowsableAPIRenderer"]
-        return self
+    # # Default renderer for browsable API
+    # @model_validator(mode="after")
+    # def set_default_renderer(self):
+    #     # Default renderer for browsable API
+    #     if env_config.ENVIRONMENT != EnvironmentChoices.PRODUCTION.value:
+    #         self.DEFAULT_RENDERER_CLASSES = ["rest_framework.renderers.BrowsableAPIRenderer"]
+    #     return self
 
     @model_validator(mode="after")
     def build_rest_framework(self) -> "RestFrameworkSettings":
