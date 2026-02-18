@@ -27,8 +27,12 @@ class MiddlewareSettings(BaseSettings):
     ]
 
     # Project-specific custom middleware
-    CUSTOM_MIDDLEWARE: list[str] = []
-    # CUSTOM_MIDDLEWARE: list[str] = []
+    CUSTOM_MIDDLEWARE: list[str] = [
+        "apps.common.middleware.custom_middleware.RequestTimingMiddleware",
+        "apps.common.middleware.custom_middleware.AddCspNonceMiddleware",
+        "apps.common.middleware.custom_middleware.RequestLoggingMiddleware",
+        "apps.common.middleware.custom_middleware.UrlValidationMiddleware",
+    ]
 
     @model_validator(mode="after")
     def set_middleware(self):

@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from apps.common.dataclass import ErrorResponse, ErrorType, ResponseClient
+from _library.dataclass import ErrorResponse, ErrorType, ResponseClient
 
 # 404 NOT FOUND
 NOT_FOUND_ERROR = ErrorResponse(
