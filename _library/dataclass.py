@@ -5,12 +5,12 @@ from pydantic import BaseModel, Field
 from rest_framework import status as response_status
 
 
-class ErrorType(Enum):
+class ErrorType(str, Enum):
     WARNING = "warning"
     ERROR = "error"
 
 
-class ResponseClient(Enum):
+class ResponseClient(str, Enum):
     DEVELOPER = "developer"
     USER = "user"
 

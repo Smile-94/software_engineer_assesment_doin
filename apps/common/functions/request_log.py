@@ -1,32 +1,65 @@
 from datetime import datetime
+import json
 import logging
 
 logger = logging.getLogger(__name__)
 
+SENSITIVE_HEADERS = {
+    "HTTP_AUTHORIZATION",
+    "HTTP_X_CSRFTOKEN",
+    "HTTP_X_CSRF_TOKEN",
+    "HTTP_CSRFTOKEN",
+    "HTTP_X_BROWSER_FINGERPRINT",
+    "HTTP_X_DEVICE_ID",
+    "HTTP_COOKIE",
+}
+
+SENSITIVE_BODY_FIELDS = {
+    "password",
+    "confirm_password",
+    "token",
+    "access",
+    "refresh",
+}
+
+
+def mask_sensitive_body(data):
+    if isinstance(data, dict):
+        return {k: ("[REDACTED]" if k.lower() in SENSITIVE_BODY_FIELDS else mask_sensitive_body(v)) for k, v in data.items()}
+    if isinstance(data, list):
+        return [mask_sensitive_body(item) for item in data]
+    return data
+
 
 def get_request_log(request, message="Request Log"):
-    """
-    Logs request information: user, device, time, and request data.
-    """
-    user = request.user if request.user.is_authenticated else "Anonymous"
-    # Filter request headers (only readable ones)
-    headers = {key: value for key, value in request.META.items() if key.startswith("HTTP_")}
+    user = request.user if hasattr(request, "user") and request.user.is_authenticated else "Anonymous"
 
-    # Remove Authorization header
-    if "HTTP_AUTHORIZATION" in headers:
-        headers["HTTP_AUTHORIZATION"] = "[REDACTED]"
+    # 🔹 Headers
+    headers = {k: v for k, v in request.META.items() if k.startswith("HTTP_")}
+    for key in headers:
+        if key in SENSITIVE_HEADERS:
+            headers[key] = "[REDACTED]"
+
+    # 🔹 Body (JSON-safe)
+    body_data = None
+    try:
+        if request.body:
+            body_data = json.loads(request.body.decode("utf-8"))
+            body_data = mask_sensitive_body(body_data)
+    except Exception:
+        body_data = "[UNPARSABLE BODY]"
 
     log_data = {
         "message": message,
         "user": str(user),
         "device": request.META.get("HTTP_USER_AGENT", "Unknown Device"),
         "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "headers": headers,
         "method": request.method,
         "path": request.path,
         "ip_address": request.META.get("REMOTE_ADDR"),
-        "request_data": request.data if hasattr(request, "data") else {},
-        "query_params": dict(request.query_params) if request.query_params else {},
+        "headers": headers,
+        "request_body": body_data,
+        "query_params": request.GET.dict(),
     }
 
     logger.info(f"INFO:----------->> REQUEST LOG: {log_data}")
