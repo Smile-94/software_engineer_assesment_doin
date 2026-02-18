@@ -5,9 +5,11 @@
 from config.django.authentication import authentication_config
 from config.django.base import base_config
 from config.django.cache import cache_config
+from config.django.celery import celery_config
 from config.django.database import database_config
 from config.django.documentation import documentation_config
 from config.django.installed_apps import installed_apps_config
+from config.django.logging import logging_config
 from config.django.middleware import middleware_config
 from config.django.rest_framework import drf_config
 from config.django.security import security_config
@@ -15,7 +17,6 @@ from config.django.sessions import sessions_config
 from config.django.static import static_config
 from config.django.templates import template_config
 from config.django.time_zone import time_zone_config
-from config.django.logging import logging_config
 
 # ------------------------------------------------------------------------------
 # Core project paths and base configuration
@@ -60,7 +61,7 @@ ROOT_URLCONF = base_config.ROOT_URLCONF
 
 # WSGI for runserver / uwsgi / gunicorn wsgi
 # WSGI_APPLICATION = "config.wsgi.application"
-ASGI_APPLICATION = "config.asgi.application"
+ASGI_APPLICATION = base_config.ASGI_APPLICATION
 
 # ------------------------------------------------------------------------------
 # Templates configuration
@@ -81,6 +82,20 @@ DATABASES = database_config.DATABASES
 # ------------------------------------------------------------------------------
 # Authentication and password validation
 # ------------------------------------------------------------------------------
+# # Auth User model
+# AUTH_USER_MODEL = authentication_config.AUTH_USER_MODEL
+
+# # Auth Token secret
+# TOKEN_SECRET_KEY = authentication_config.TOKEN_SECRET_KEY
+
+# Auth Token expiration
+# ACCESS_TOKEN_TTL = authentication_config.ACCESS_TOKEN_TTL
+
+# REFRESH_TOKEN_TTL = authentication_config.REFRESH_TOKEN_TTL
+
+# # Auth Backends
+# AUTHENTICATION_BACKENDS = authentication_config.AUTHENTICATION_BACKENDS
+
 # Password validators enforce strong passwords and security best practices
 AUTH_PASSWORD_VALIDATORS = authentication_config.AUTH_PASSWORD_VALIDATORS
 
@@ -153,3 +168,26 @@ SPECTACULAR_SETTINGS = documentation_config.SPECTACULAR_SETTINGS
 # Logging configuration
 # ------------------------------------------------------------------------------
 LOGGING = logging_config.LOGGING
+
+# ------------------------------------------------------------------------------
+# Debug toolbar configuration
+# ------------------------------------------------------------------------------
+INTERNAL_IPS = base_config.INTERNAL_IPS
+DEBUG_TOOLBAR_CONFIG = base_config.DEBUG_TOOLBAR_CONFIG
+
+# ------------------------------------------------------------------------------
+# Celery configuration
+# ------------------------------------------------------------------------------
+CELERY_BROKER_URL = celery_config.CELERY_BROKER_URL
+CELERY_RESULT_BACKEND = celery_config.CELERY_RESULT_BACKEND
+
+CELERY_ACCEPT_CONTENT = celery_config.CELERY_ACCEPT_CONTENT
+CELERY_TASK_SERIALIZER = celery_config.CELERY_TASK_SERIALIZER
+CELERY_RESULT_SERIALIZER = celery_config.CELERY_RESULT_SERIALIZER
+CELERY_ENABLE_UTC = celery_config.CELERY_ENABLE_UTC
+CELERY_TIMEZONE = celery_config.CELERY_TIMEZONE
+
+CELERY_TASK_ACKS_LATE = celery_config.CELERY_TASK_ACKS_LATE
+CELERY_TASK_REJECT_ON_WORKER_LOST = celery_config.CELERY_TASK_REJECT_ON_WORKER_LOST
+CELERY_WORKER_PREFETCH_MULTIPLIER = celery_config.CELERY_WORKER_PREFETCH_MULTIPLIER
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = celery_config.CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP

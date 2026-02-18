@@ -25,6 +25,12 @@ class CacheSettings(BaseSettings):
     # Redis database index; validate >= 0
     REDIS_DB: int = Field(default=1, frozen=True, repr=False)
 
+    # Dedicated Redis DB for Celery broker (avoid collision with Django cache)
+    REDIS_DB_BROKER: int = Field(default=2, frozen=True, repr=False)
+
+    # Dedicated Redis DB for Celery result backend
+    REDIS_DB_BACKEND: int = Field(default=3, frozen=True, repr=False)
+
     # Redis password, wrapped in SecretStr for security, hidden from logs
     REDIS_PASSWORD: SecretStr = Field(default=SecretStr(""), frozen=True, repr=False)
 

@@ -33,6 +33,8 @@ class BaseSettings(BaseSettings):
     ASGI_APPLICATION: str = "config.asgi.application"
     ROOT_URLCONF: str = "routes.urls"
 
+    DEBUG_TOOLBAR_CONFIG: dict = {"SHOW_TOOLBAR_CALLBACK": lambda request: not request.path.startswith("/api/")}
+
     @model_validator(mode="after")
     def parse_allowed_hosts(self) -> "BaseSettings":
         # Derive ALLOWED_HOSTS from SERVER_NAME to ensure
