@@ -21,6 +21,7 @@ class InstalledAppsSettings(BaseSettings):
 
     # Third-party applications common across environments
     THIRD_PARTY_APPS: list[str] = [
+        "rangefilter",
         "django_filters",
         "rest_framework",
         "drf_spectacular",
@@ -31,6 +32,7 @@ class InstalledAppsSettings(BaseSettings):
     # Project-specific Django apps
     LOCAL_APPS: list[str] = [
         "apps.common.apps.CommonConfig",
+        "apps.user.apps.UserConfig",
     ]
 
     # Final Django-compatible INSTALLED_APPS list

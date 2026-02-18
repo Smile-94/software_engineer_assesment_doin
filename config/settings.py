@@ -82,19 +82,19 @@ DATABASES = database_config.DATABASES
 # ------------------------------------------------------------------------------
 # Authentication and password validation
 # ------------------------------------------------------------------------------
-# # Auth User model
-# AUTH_USER_MODEL = authentication_config.AUTH_USER_MODEL
+# Auth User model
+AUTH_USER_MODEL = authentication_config.AUTH_USER_MODEL
 
-# # Auth Token secret
-# TOKEN_SECRET_KEY = authentication_config.TOKEN_SECRET_KEY
+# Auth Token secret
+TOKEN_SECRET_KEY = authentication_config.TOKEN_SECRET_KEY
 
 # Auth Token expiration
-# ACCESS_TOKEN_TTL = authentication_config.ACCESS_TOKEN_TTL
+ACCESS_TOKEN_TTL = authentication_config.ACCESS_TOKEN_TTL
 
-# REFRESH_TOKEN_TTL = authentication_config.REFRESH_TOKEN_TTL
+REFRESH_TOKEN_TTL = authentication_config.REFRESH_TOKEN_TTL
 
-# # Auth Backends
-# AUTHENTICATION_BACKENDS = authentication_config.AUTHENTICATION_BACKENDS
+# Auth Backends
+AUTHENTICATION_BACKENDS = authentication_config.AUTHENTICATION_BACKENDS
 
 # Password validators enforce strong passwords and security best practices
 AUTH_PASSWORD_VALIDATORS = authentication_config.AUTH_PASSWORD_VALIDATORS
