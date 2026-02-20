@@ -51,7 +51,6 @@ def validate_device_headers(request: Request, extended_header=None) -> tuple[boo
 
 
 def validate_request_fields(
-    *,
     model_class: type[Model],
     request_data: dict[str, Any],
     serializer_class: type[Serializer] | None = None,
