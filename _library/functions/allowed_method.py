@@ -3,7 +3,7 @@ from functools import wraps
 
 from django.http import JsonResponse
 
-from apps.common.error_codes import METHOD_NOT_ALLOWED_ERROR
+from _library.error_codes import METHOD_NOT_ALLOWED_ERROR
 
 
 def allowed_methods(*methods: Iterable[str]):

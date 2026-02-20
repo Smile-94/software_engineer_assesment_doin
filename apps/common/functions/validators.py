@@ -4,9 +4,50 @@ from typing import Any
 
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Model
+from rest_framework.request import Request
 from rest_framework.serializers import Serializer
 
 logger = logging.getLogger(__name__)
+
+
+def validate_device_headers(request: Request, extended_header=None) -> tuple[bool, dict[str, Any] | None]:
+    """
+    Validate required security headers from the incoming request.
+
+    This function checks whether the required device-identifying headers
+    are present in the HTTP request. These headers are typically used
+    for refresh token validation, device binding, and enhanced security.
+
+    Required Headers:
+        - X-Device-ID
+        - X-Browser-Fingerprint
+
+    Args:
+        request (Request): DRF request object.
+
+    Returns:
+        Tuple[bool, Optional[Dict[str, Any]]]:
+            - True, None → If all required headers exist.
+            - False, error_data → If any required header is missing.
+    """
+
+    required_headers = ["X-Device-ID", "X-Browser-Fingerprint"]
+    missing_headers = []
+
+    if extended_header:
+        required_headers.append(extended_header)
+
+    for header in required_headers:
+        if not request.headers.get(header):
+            missing_headers.append(header)
+
+    if missing_headers:
+        return False, {
+            "message": "Missing required security headers",
+            "info": f"Missing headers: {', '.join(missing_headers)}",
+        }
+
+    return True, None
 
 
 def validate_request_fields(
