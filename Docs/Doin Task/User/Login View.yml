@@ -4,8 +4,15 @@ info:
   seq: 1
 
 http:
-  method: GET
-  url: "{{baseUrl}}/userlogin/"
+  method: POST
+  url: "{{baseUrl}}/user/login/"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "admin",
+        "password": "admin"
+      }
   auth: inherit
 
 settings:

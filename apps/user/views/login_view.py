@@ -21,6 +21,7 @@ from apps.common.functions.validators import validate_device_headers
 from apps.user.documentation.login_documentation import AuthenticationDocumentation
 from apps.user.models.user_model import UserDeviceToken
 from apps.user.serializers.login_serializer import LoginSerializer, RefreshTokenSerializer
+from apps.user.tasks.invalid_token_task import deactivate_previous_device_sessions
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +77,8 @@ class TokenObtainView(APIView):
             fingerprint_hash = hash_token(browser_fingerprint)
             ua_hash = hash_token(user_agent)
 
-            # Enforce single active session per device
-            self.model_class.objects.filter(user=user, device_id=device_id).update(is_active=False)
+            # Enforce single active session per device in background
+            deactivate_previous_device_sessions.delay(user.id, device_id)
 
             self.model_class.objects.create(
                 user=user,
@@ -206,11 +207,7 @@ class TokenRefreshView(APIView):
             token_obj.rotated_at = now()
             token_obj.save()
 
-            data = {
-                "message": "Refresh token rotated",
-                "access_token": new_access,
-                "refresh_token": new_refresh,
-            }
+            data = {"message": "Refresh token rotated", "access_token": new_access, "refresh_token": new_refresh}
 
             return response_formatter(SUCCESS_RESPONSE_200, data)
 

@@ -15,8 +15,3 @@ class LoginSerializer(serializers.Serializer):
 # <<------------------------------------Refresh Token Serializer---------------------------------------->>
 class RefreshTokenSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(max_length=255, required=True)
-
-    def validate_refresh_token(self, value):
-        if not value.isalnum():
-            raise serializers.ValidationError("Refresh token must be alphanumeric.")
-        return value

@@ -11,7 +11,7 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path("api/v1/user", include(user_urls)),
+    path("api/v1/user/", include(user_urls)),
 ]
 
 if security_config.DEBUG:

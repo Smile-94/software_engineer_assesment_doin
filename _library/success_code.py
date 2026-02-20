@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from apps.common.dataclass import ResponseClient, SuccessResponse
+from _library.dataclass import ResponseClient, SuccessResponse
 
 # 201 SUCCESS RESPONSE
 SUCCESS_RESPONSE_201 = SuccessResponse(
