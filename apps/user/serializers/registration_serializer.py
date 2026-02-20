@@ -1,5 +1,6 @@
 import re
 
+from django.db.models import Q
 from rest_framework import serializers
 
 from apps.user.models.user_model import User
@@ -28,32 +29,49 @@ class RegistrationSerializer(serializers.Serializer):
         - At least one digit.
         - At least one special character.
         """
-        # Check for uppercase
+        errors = []
+
         if not any(char.isupper() for char in value):
-            raise serializers.ValidationError("Password must contain at least one uppercase letter.")
-        # Check for lowercase
+            errors.append("Password must contain at least one uppercase letter.")
+
         if not any(char.islower() for char in value):
-            raise serializers.ValidationError("Password must contain at least one lowercase letter.")
-        # Check for digit
+            errors.append("Password must contain at least one lowercase letter.")
+
         if not any(char.isdigit() for char in value):
-            raise serializers.ValidationError("Password must contain at least one digit.")
-        # Check for special character
+            errors.append("Password must contain at least one digit.")
+
         special_chars = "!@#$%^&*()_+-=[]{}|;:'\",.<>/?`~"
         if not any(char in special_chars for char in value):
-            raise serializers.ValidationError("Password must contain at least one special character.")
+            errors.append("Password must contain at least one special character.")
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
         return value
 
     def validate(self, data):
-        # Check password match
-        if data["password"] != data["confirm_password"]:
-            raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
+        errors = {}
 
-        # Check uniqueness
-        if User.objects.filter(username=data["username"]).exists():
-            raise serializers.ValidationError({"username": "A user with this username already exists."})
-        if User.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError({"email": "A user with this email already exists."})
-        if User.objects.filter(phone=data["phone"]).exists():
-            raise serializers.ValidationError({"phone": "A user with this phone number already exists."})
+        # Password match validation
+        if data["password"] != data["confirm_password"]:
+            errors["confirm_password"] = "Passwords do not match."
+
+        # Single DB query for uniqueness
+        existing_users = User.objects.only("username", "email", "phone").filter(
+            Q(username=data["username"]) | Q(email=data["email"]) | Q(phone=data["phone"])
+        )
+
+        # Map existing conflicts
+        for user in existing_users:
+            if user.username == data["username"]:
+                errors["username"] = "A user with this username already exists."
+            if user.email == data["email"]:
+                errors["email"] = "A user with this email already exists."
+            if user.phone == data["phone"]:
+                errors["phone"] = "A user with this phone number already exists."
+
+        # Raise all errors at once
+        if errors:
+            raise serializers.ValidationError(errors)
 
         return data

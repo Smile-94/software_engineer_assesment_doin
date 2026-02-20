@@ -12,6 +12,28 @@ from apps.common.functions.request_log import get_request_log
 logger = logging.getLogger(__name__)
 
 
+class CacheRequestBodyMiddleware:
+    """
+    Ensures request.body is cached early, preventing RawPostDataException.
+    Must be placed at the top of MIDDLEWARE.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Only cache for methods that typically have a body
+        if request.method in ("POST", "PUT", "PATCH", "DELETE"):
+            try:
+                # Cache raw body early to avoid DRF RawPostDataException
+                if not hasattr(request, "_cached_body"):
+                    request._cached_body = request.body  # store raw bytes
+            except Exception as e:
+                # Log if needed, but continue – the body may be unreadable
+                logger.debug(f"Could not cache request body: {e}")
+        return self.get_response(request)
+
+
 class UrlValidationMiddleware:
     """
     Middleware to check if the request URL exists.
@@ -57,12 +79,12 @@ class RequestLoggingMiddleware:
                 # Trigger DRF authentication for API requests
                 drf_request = Request(request)
                 _ = getattr(drf_request, "user", None)  # forces authentication
+                request.drf_request = drf_request
             else:
                 drf_request = request  # leave Django request as-is
             # Continue processing the request
             response = self.get_response(request)
 
-            logger.info(f"INFO:----------->> REQUEST RESPONSE: {response}")
             # Log the request
             get_request_log(request)
             return response

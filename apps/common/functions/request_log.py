@@ -34,20 +34,41 @@ def mask_sensitive_body(data):
 def get_request_log(request, message="Request Log"):
     user = request.user if hasattr(request, "user") and request.user.is_authenticated else "Anonymous"
 
-    # 🔹 Headers
+    #  Headers
     headers = {k: v for k, v in request.META.items() if k.startswith("HTTP_")}
     for key in headers:
         if key in SENSITIVE_HEADERS:
             headers[key] = "[REDACTED]"
 
-    # 🔹 Body (JSON-safe)
-    body_data = None
+    body_data = {}
     try:
-        if request.body:
-            body_data = json.loads(request.body.decode("utf-8"))
+        if request._cached_body:
+            try:
+                body_data = json.loads(request._cached_body.decode("utf-8"))
+            except Exception:
+                # Fallback: leave as raw string
+                body_data = request._cached_body.decode("utf-8")
+        else:
+            body_data = {}
+
+        # If DRF request.data exists, use it (already parsed)
+        if hasattr(request, "data") and request.data is not None:
+            body_data = request.data
+
+        # Mask sensitive fields
+        if isinstance(body_data, (dict, list)):
             body_data = mask_sensitive_body(body_data)
-    except Exception:
+
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
         body_data = "[UNPARSABLE BODY]"
+    except Exception as e:
+        logger.error(f"Unexpected body parsing error: {e}")
+        body_data = "[UNPARSABLE BODY]"
+
+    # Mask sensitive fields
+    if body_data and isinstance(body_data, (dict, list)):
+        body_data = mask_sensitive_body(body_data)
 
     log_data = {
         "message": message,
