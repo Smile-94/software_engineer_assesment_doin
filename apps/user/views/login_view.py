@@ -77,10 +77,7 @@ class TokenObtainView(APIView):
             fingerprint_hash = hash_token(browser_fingerprint)
             ua_hash = hash_token(user_agent)
 
-            # Enforce single active session per device in background
-            deactivate_previous_device_sessions.delay(user.id, device_id)
-
-            self.model_class.objects.create(
+            token = self.model_class.objects.create(
                 user=user,
                 device_id=device_id,
                 access_token_hash=access_hash,
@@ -92,6 +89,8 @@ class TokenObtainView(APIView):
                 access_expires_at=get_access_token_expiry(),
                 refresh_expires_at=get_refresh_token_expiry(),
             )
+            # Enforce single active session per device in background
+            deactivate_previous_device_sessions.delay(token.id, user.id, device_id)
 
             data = {
                 "message": "Login successful",

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
     retry_backoff=5,
     retry_kwargs={"max_retries": 3},
 )
-def deactivate_previous_device_sessions(self, user_id: int, device_id: str) -> int:
+def deactivate_previous_device_sessions(self, token_id, user_id: int, device_id: str) -> int:
     try:
         # Input Validation (Fail Fast)
 
@@ -29,8 +29,10 @@ def deactivate_previous_device_sessions(self, user_id: int, device_id: str) -> i
         # Ensures consistency under concurrency
 
         with transaction.atomic():
-            updated_count = UserDeviceToken.objects.filter(user_id=user_id, device_id=device_id, is_active=True).update(
-                is_active=False
+            updated_count = (
+                UserDeviceToken.objects.filter(user_id=user_id, device_id=device_id, is_active=True)
+                .exclude(id=token_id)
+                .update(is_active=False)
             )
 
         logger.info(

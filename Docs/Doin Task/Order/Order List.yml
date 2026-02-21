@@ -1,0 +1,22 @@
+info:
+  name: Order List
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/order/"
+  headers:
+    - name: X-Device-ID
+      value: "{{deviceId}}"
+    - name: X-Browser-Fingerprint
+      value: "{{browserFingerPrint}}"
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
