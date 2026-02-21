@@ -33,6 +33,7 @@ class InstalledAppsSettings(BaseSettings):
     LOCAL_APPS: list[str] = [
         "apps.common.apps.CommonConfig",
         "apps.user.apps.UserConfig",
+        "apps.broker.apps.BrokerConfig",
     ]
 
     # Final Django-compatible INSTALLED_APPS list
