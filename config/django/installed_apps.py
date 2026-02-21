@@ -34,6 +34,7 @@ class InstalledAppsSettings(BaseSettings):
         "apps.common.apps.CommonConfig",
         "apps.user.apps.UserConfig",
         "apps.broker.apps.BrokerConfig",
+        "apps.order.apps.OrderConfig",
     ]
 
     # Final Django-compatible INSTALLED_APPS list
