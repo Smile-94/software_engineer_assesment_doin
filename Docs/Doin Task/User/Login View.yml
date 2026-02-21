@@ -6,6 +6,11 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/user/login/"
+  headers:
+    - name: X-Device-ID
+      value: "{{deviceId}}"
+    - name: X-Browser-Fingerprint
+      value: "{{browserFingerPrint}}"
   body:
     type: json
     data: |-

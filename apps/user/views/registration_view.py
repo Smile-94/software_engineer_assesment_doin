@@ -51,6 +51,8 @@ class RegistrationView(APIView):
             with atomic():
                 # Create new user instance
                 instance = create_instance(self.model_class, serializer.validated_data, extract_fields=["confirm_password"])
+                instance.set_password(instance.password)
+                instance.save()
 
                 # Minimal response payload to reduce response size
                 data = {"id": instance.id, "message": f"Created {self.model_class.__name__} with id '{instance.id}'"}
