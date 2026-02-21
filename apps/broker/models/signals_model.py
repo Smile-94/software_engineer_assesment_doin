@@ -1,5 +1,6 @@
 from django.db import models
 
+from apps.broker.models.broker_account_model import BrokerAccount
 from apps.broker.models.choices import SignalStatusChoices
 from apps.common.models import BaseModel, TimeStampedModel, UserStampModel
 from apps.user.models.user_model import User
@@ -8,9 +9,10 @@ from apps.user.models.user_model import User
 class TradingSignal(BaseModel, TimeStampedModel, UserStampModel):
     """Raw incoming trading signal"""
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="signals")
-    raw_message = models.TextField()
-    status = models.CharField(max_length=20, choices=SignalStatusChoices.choices, default=SignalStatusChoices.SUCCESS.value)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="signals_user")
+    account = models.ForeignKey(BrokerAccount, on_delete=models.CASCADE, related_name="signals_account", null=True, blank=True)
+    raw_message = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=SignalStatusChoices.choices, default=SignalStatusChoices.PENDING.value)
     error_message = models.TextField(null=True, blank=True)
 
     class Meta:

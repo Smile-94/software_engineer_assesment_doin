@@ -14,13 +14,12 @@ class Order(BaseModel, TimeStampedModel):
     order_id = models.CharField(max_length=50, unique=True, editable=False, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     signal = models.OneToOneField(TradingSignal, on_delete=models.SET_NULL, blank=True, null=True, related_name="signal_order")
-    action = models.CharField(max_length=4, choices=Action.choices)
+    action = models.CharField(max_length=4, choices=Action.choices, blank=True, null=True)
     instrument = models.CharField(max_length=20)
-    entry_price = models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True)
-    stop_loss = models.DecimalField(max_digits=10, decimal_places=5, validators=[MinValueValidator(0)])
-    take_profit = models.DecimalField(max_digits=10, decimal_places=5, validators=[MinValueValidator(0)])
+    entry_price = models.DecimalField(max_digits=19, decimal_places=4, null=True, blank=True)
+    stop_loss = models.DecimalField(max_digits=19, decimal_places=4, validators=[MinValueValidator(0)])
+    take_profit = models.DecimalField(max_digits=19, decimal_places=4, validators=[MinValueValidator(0)])
     status = models.CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
-    broker_order_id = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         app_label = "order"
@@ -34,7 +33,7 @@ class Order(BaseModel, TimeStampedModel):
 
     def clean(self):
         if not self.order_id:
-            self.order_id = generate_custom_id(id_prefix="order", field="order_id", model_class=self.__class__)
+            self.order_id = generate_custom_id(id_prefix="INV", field="order_id", model_class=self.__class__)
         return super().clean()
 
     def save(self, *args, **kwargs):
@@ -62,7 +61,7 @@ class OrderHistory(BaseModel, TimeStampedModel, UserStampModel):
         ]
 
     def __str__(self):
-        return f"{self.order.order_number} - {self.status}"
+        return f"{self.order.order_id} - {self.status}"
 
     def __repr__(self):
-        return f"<Order History: {self.order.order_number} - {self.status}>"
+        return f"<Order History: {self.order.order_id} - {self.status}>"

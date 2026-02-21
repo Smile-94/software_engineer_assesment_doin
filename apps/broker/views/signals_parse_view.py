@@ -6,8 +6,11 @@ from _library.error_codes import BAD_REQUEST_DEVELOPER_ERROR, BAD_REQUEST_USER_E
 from _library.functions.allowed_method import allowed_methods
 from _library.functions.formatters import response_formatter
 from _library.success_code import SUCCESS_RESPONSE_200
+from apps.broker.documentation.signal_parse_documentation import SignalDocumentation
 from apps.broker.models.broker_account_model import BrokerAccount
+from apps.broker.models.signals_model import TradingSignal
 from apps.broker.serializers.signals_parse_serializer import SignalsParseSerializer
+from apps.broker.tasks.paser_signal_task import process_signal_task
 from apps.common.parser.plain_text_parser import PlainTextParser
 from apps.common.security.encryption import hash_api_key
 
@@ -24,8 +27,10 @@ class ReceiveSignalAPIView(APIView):
     parser_classes = [PlainTextParser]
 
     model_class = BrokerAccount
+    trading_signal_model = TradingSignal
     serializer_class = SignalsParseSerializer
 
+    @SignalDocumentation.receive()
     def post(self, request):
         try:
             # Reject if X-API-KEY header is missing
@@ -50,6 +55,12 @@ class ReceiveSignalAPIView(APIView):
             if not message:
                 return response_formatter(BAD_REQUEST_USER_ERROR, {"message": "Signal message is required"})
 
+            signal = self.trading_signal_model.objects.create(
+                user=broker_account.user, account=broker_account, raw_message=message
+            )
+
+            process_signal_task.delay(signal.id)
+
             data = {"message": "Signal received", "info": "Signal Received and processing"}
             return response_formatter(SUCCESS_RESPONSE_200, data)
 
@@ -65,6 +76,6 @@ class ReceiveSignalAPIView(APIView):
         hashed = hash_api_key(api_key)
 
         try:
-            return self.model_class.objects.only("id").get(api_key_hash=hashed)
+            return self.model_class.objects.get(api_key_hash=hashed)
         except self.model_class.DoesNotExist:
             return None
