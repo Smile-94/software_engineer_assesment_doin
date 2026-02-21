@@ -8,6 +8,7 @@ from _library.error_codes import BAD_REQUEST_DEVELOPER_ERROR, BAD_REQUEST_USER_E
 from _library.functions.allowed_method import allowed_methods
 from _library.functions.formatters import response_formatter
 from _library.success_code import SUCCESS_RESPONSE_201
+from apps.broker.documentation.broker_account_documentatin import BrokerAccountDocumentation
 from apps.broker.models.broker_account_model import BrokerAccount
 from apps.broker.serializers.broker_account_serializer import BrokerAccountSerializer
 from apps.common.authentication import DeviceTokenAuthentication
@@ -28,6 +29,7 @@ class CreateBrokerAccountView(APIView):
     model_class = BrokerAccount
     serializer_class = BrokerAccountSerializer
 
+    @BrokerAccountDocumentation.create()
     def post(self, request):
         try:
             # Reject empty payloads early to avoid undefined auth behavior
