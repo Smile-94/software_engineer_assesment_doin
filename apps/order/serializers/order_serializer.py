@@ -40,4 +40,4 @@ class OrderSerializer(FilterFieldMixin, serializers.Serializer):
     description = serializers.CharField(read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
-    order_history = serializers.ListSerializer(child=OrderHistorySerializer(), read_only=True)
+    order_history = serializers.ListSerializer(source="history", child=OrderHistorySerializer(), read_only=True)
