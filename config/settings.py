@@ -34,6 +34,9 @@ SECRET_KEY = security_config.SECRET_KEY
 # Debug should ALWAYS be False in production
 DEBUG = security_config.DEBUG
 
+# Broker API encryption key
+BROKER_API_ENCRYPTION_KEY = security_config.BROKER_API_ENCRYPTION_KEY
+
 # Hosts/domain names that this Django site can serve
 # Prevents HTTP Host header attacks
 ALLOWED_HOSTS = base_config.ALLOWED_HOSTS

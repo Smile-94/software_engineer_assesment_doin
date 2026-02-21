@@ -14,13 +14,7 @@ SENSITIVE_HEADERS = {
     "HTTP_COOKIE",
 }
 
-SENSITIVE_BODY_FIELDS = {
-    "password",
-    "confirm_password",
-    "token",
-    "access",
-    "refresh",
-}
+SENSITIVE_BODY_FIELDS = {"password", "confirm_password", "token", "access", "refresh", "api_key"}
 
 
 def mask_sensitive_body(data):

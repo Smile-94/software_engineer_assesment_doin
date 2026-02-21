@@ -3,7 +3,7 @@ variables:
   - name: baseUrl
     value: http://127.0.0.1:8000/api/v1
   - name: accessToken
-    value: m0E-yUwHBdHu0jNcYadJmBo3DgbNAnkPGxOa7ltsS-qm4d-kBPrqvOnCQPZ8ytUIZz4h0Atn2Ty4YvyhUXedDA.1279f69ca3ea44815cb3c05c26107d1f1407f08bb7d6788484eff42194dc81cd
+    value: -ac0cSNsqlAO0CItvzGoq9_JYkVUxzoiNXplyOa5rXPLWlMOoFoB7iLK41XW5c1Jzp64rf83vdMC_x1AEAkLOQ.475961fea8e74d5e2220740ce07a90d10778d815a48a0dff59361bd579a85e87
   - name: deviceId
     value: 3a35f03d-6684-48a2-bb36-42496f002432
   - name: browserFingerPrint

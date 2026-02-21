@@ -18,12 +18,22 @@ class SecuritySettings(BaseSettings):
     # Cryptographic secret used by Django (must be provided via environment)
     SECRET_KEY: SecretStr = Field(..., frozen=True, description="Django secret key")
 
+    BROKER_API_ENCRYPTION_KEY: str = Field(..., frozen=True, description="Broker API encryption key")
+
     @field_validator("SECRET_KEY", mode="before")
     @classmethod
     def validate_secret_key(cls, value):
         # Fail fast if SECRET_KEY is missing to prevent insecure startup
         if not value:
             raise ValueError("SECRET_KEY must be set")
+        return value
+
+    @field_validator("BROKER_API_ENCRYPTION_KEY", mode="before")
+    @classmethod
+    def validate_broker_api_encryption_key(cls, value):
+        # Fail fast if BROKER_API_ENCRYPTION_KEY is missing to prevent insecure startup
+        if not value:
+            raise ValueError("BROKER_API_ENCRYPTION_KEY must be set")
         return value
 
     model_config = SettingsConfigDict(
