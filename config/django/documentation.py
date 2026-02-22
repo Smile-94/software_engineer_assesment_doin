@@ -48,8 +48,8 @@ class DocumentationSettings(BaseSettings):
     # ---------------------------
     # API Path Prefix
     # ---------------------------
-    SCHEMA_PATH_PREFIX: str = Field(default="/api", description="Schema path prefix")
-    SCHEMA_PATH_PREFIX_INSERT: str = Field(default="", description="Schema prefix insert")
+    SCHEMA_PATH_PREFIX: str = Field(default="/api/v1", description="Schema path prefix")
+    SCHEMA_PATH_PREFIX_INSERT: str = Field(default="/api/v1", description="Schema path prefix insert")
     SCHEMA_PATH_PREFIX_TRIM: str = Field(default="/api", description="Schema prefix trim")
 
     # ---------------------------

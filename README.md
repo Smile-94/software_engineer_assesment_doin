@@ -151,7 +151,7 @@ The following API endpoint is designed to receive raw trading signals (plain tex
 #### API Specification
 - Endpoint: 
 ```bash
-https://localhost:8000/api/v1/signals/parse/
+https://localhost:8000/api/v1/broker/webhook/receive-signal/
 ```
 - Method: POST
 

@@ -53,11 +53,9 @@ def get_request_log(request, message="Request Log"):
         if isinstance(body_data, (dict, list)):
             body_data = mask_sensitive_body(body_data)
 
-    except json.JSONDecodeError as e:
-        logger.error(f"JSON decode error: {e}")
+    except json.JSONDecodeError:
         body_data = "[UNPARSABLE BODY]"
-    except Exception as e:
-        logger.error(f"Unexpected body parsing error: {e}")
+    except Exception:
         body_data = "[UNPARSABLE BODY]"
 
     # Mask sensitive fields
