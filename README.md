@@ -58,6 +58,13 @@ Reload your shell configuration:
 source ~/.bashrc  # or source ~/.zshrc
 ```
 
+### Clone the Repository
+
+```zsh
+https://github.com/Smile-94/software_engineer_assesment_doin.git
+```
+Then go to the project directory and open the terminal. after opening the the terminal, run the following command to install Poetry and the project
+
 ### Install Dependencies
 
 ```zsh
