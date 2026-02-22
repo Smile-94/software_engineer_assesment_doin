@@ -9,6 +9,7 @@ from apps.broker.models.choices import SignalStatusChoices
 from apps.broker.models.signals_model import TradingSignal
 from apps.order.models.choices import Action, OrderStatus
 from apps.order.models.order_model import Order, OrderHistory
+from apps.order.tasks.order_life_cycle_task import simulate_order_lifecycle
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,9 @@ def process_signal_task(self, signal_id):
             if data["action"] == "SELL":
                 order.action = Action.SELL.value
             order.save()
+
+            simulate_order_lifecycle.delay(order.id)
+
             logger.info(f"INFO: ------------>> Created order: {order.order_id}")
 
             order_history = OrderHistory.objects.create(
