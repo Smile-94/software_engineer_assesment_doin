@@ -1,6 +1,8 @@
 import logging
 
+from asgiref.sync import async_to_sync
 from celery import shared_task
+from channels.layers import get_channel_layer
 from django.db.transaction import atomic
 
 from _library.functions.number_utils import round_half_up
@@ -27,6 +29,14 @@ def process_signal_task(self, signal_id):
             signal.status = SignalStatusChoices.FAILED.value
             signal.error_message = parsed["error"]
             signal.save(update_fields=["status", "error_message"])
+            data = {
+                "event": "signal.invalid",
+                "trading_id": signal.id,
+                "user": signal.user.username,
+                "account_id": signal.account_id,
+                "error_message": signal.error_message,
+            }
+            notify_signal_invalid.delay(data)
             return
 
         data = parsed["data"]
@@ -74,3 +84,24 @@ def process_signal_task(self, signal_id):
         signal.error_message = str(e)
         signal.save(update_fields=["status", "error_message"])
         raise
+
+
+@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True, max_retries=3)
+def notify_signal_invalid(self, data):
+    try:
+        channel_layer = get_channel_layer()
+
+        group_name = "signal_invalid"
+        channel_layer = get_channel_layer()
+
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "signal_invalid_event",  # must match consumer method
+                "data": data,
+            },
+        )
+
+    except Exception as exc:
+        logger.exception(f"ERROR:---------->> Notify signal invalid task error: {exc}")
+        raise exc
