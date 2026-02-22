@@ -21,6 +21,7 @@ class InstalledAppsSettings(BaseSettings):
 
     # Third-party applications common across environments
     THIRD_PARTY_APPS: list[str] = [
+        "channels",
         "rangefilter",
         "django_filters",
         "rest_framework",

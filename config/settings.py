@@ -17,6 +17,7 @@ from config.django.sessions import sessions_config
 from config.django.static import static_config
 from config.django.templates import template_config
 from config.django.time_zone import time_zone_config
+from config.django.channel import channel_config
 
 # ------------------------------------------------------------------------------
 # Core project paths and base configuration
@@ -194,3 +195,8 @@ CELERY_TASK_ACKS_LATE = celery_config.CELERY_TASK_ACKS_LATE
 CELERY_TASK_REJECT_ON_WORKER_LOST = celery_config.CELERY_TASK_REJECT_ON_WORKER_LOST
 CELERY_WORKER_PREFETCH_MULTIPLIER = celery_config.CELERY_WORKER_PREFETCH_MULTIPLIER
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = celery_config.CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP
+
+# ----------------------------------------------------------------------------------------------------
+# CHANNELS (WEBSOCKETS)
+# ----------------------------------------------------------------------------------------------------
+CHANNEL_LAYERS = channel_config.CHANNEL_LAYERS

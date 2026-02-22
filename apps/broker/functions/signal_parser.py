@@ -1,4 +1,7 @@
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def parse_signal(message: str):
@@ -15,7 +18,7 @@ def parse_signal(message: str):
         if not message or not isinstance(message, str):
             return {"valid": False, "error": "Empty message"}
 
-        print(f"INFO: ------------>> Parsing signal message: {message}")
+        logger.info(f"INFO:-------->> Parsing signal message: {message}")
 
         # Remove starting & ending double quotes
         if message.startswith('"') and message.endswith('"'):
@@ -27,6 +30,7 @@ def parse_signal(message: str):
 
         lines = [line.strip() for line in message.split("\n") if line.strip()]
         if len(lines) < 2:
+            logger.warning(f"WARNING:-------->> Incomplete signal data: {message}")
             return {"valid": False, "error": "Incomplete signal data"}
 
         # -------------------------
@@ -38,6 +42,7 @@ def parse_signal(message: str):
         match = re.match(pattern, first_line)
 
         if not match:
+            logger.warning(f"WARNING:-------->> Invalid first line format: {first_line}")
             return {"valid": False, "error": "Invalid first line format"}
 
         action = match.group(1)
@@ -59,30 +64,36 @@ def parse_signal(message: str):
                 try:
                     sl = float(line.split()[1])
                 except (IndexError, ValueError):
+                    logger.warning(f"WARNING:-------->> Invalid SL format: {line}")
                     return {"valid": False, "error": "Invalid SL format"}
 
             elif upper.startswith("TP"):
                 try:
                     tp = float(line.split()[1])
                 except (IndexError, ValueError):
+                    logger.warning(f"WARNING:-------->> Invalid TP format: {line}")
                     return {"valid": False, "error": "Invalid TP format"}
 
         if sl is None:
+            logger.warning(f"WARNING:-------->> SL not found in signal message: {message}")
             return {"valid": False, "error": "SL missing"}
 
         if tp is None:
+            logger.warning(f"WARNING:-------->> TP not found in signal message: {message}")
             return {"valid": False, "error": "TP missing"}
 
         # -------------------------
         # Logical Validation
         # -------------------------
         if action == "BUY" and sl >= tp:
+            logger.warning(f"WARNING:-------->> BUY signal with SL >= TP: {sl} >= {tp}")
             return {
                 "valid": False,
                 "error": "For BUY, SL must be lower than TP",
             }
 
         if action == "SELL" and sl <= tp:
+            logger.warning(f"WARNING:-------->> SELL signal with SL <= TP: {sl} <= {tp}")
             return {
                 "valid": False,
                 "error": "For SELL, SL must be higher than TP",
@@ -100,6 +111,7 @@ def parse_signal(message: str):
         }
 
     except Exception as e:
+        logger.error(f"ERROR:-------->> Unexpected error in parser_signal: {str(e)}")
         return {
             "valid": False,
             "error": f"Unexpected error: {str(e)}",

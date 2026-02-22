@@ -8,6 +8,8 @@ from django.db import transaction
 
 from apps.order.models.choices import OrderStatus
 from apps.order.models.order_model import Order, OrderHistory
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +29,7 @@ def simulate_order_lifecycle(self, order_id: str):
             order.status = OrderStatus.EXECUTED.value
             order.save(update_fields=["status"])
             logger.info(f"INFO------>> Order {order.order_id} executed.")
+            broadcast_order_event(order, OrderStatus.EXECUTED.value)
 
             order_history = OrderHistory.objects.create(
                 order=order,
@@ -42,6 +45,7 @@ def simulate_order_lifecycle(self, order_id: str):
             order.status = OrderStatus.CLOSED.value
             order.save(update_fields=["status"])
             logger.info(f"INFO------>> Order {order.order_id} closed.")
+            broadcast_order_event(order, OrderStatus.CLOSED.value)
 
             order_history = OrderHistory.objects.create(
                 order=order,
@@ -57,3 +61,21 @@ def simulate_order_lifecycle(self, order_id: str):
     except Exception as exc:
         logger.error(f"Error processing order {order_id}: {str(exc)}")
         raise exc
+
+
+def broadcast_order_event(order, event_type):
+    channel_layer = get_channel_layer()
+
+    async_to_sync(channel_layer.group_send)(
+        "orders_group",
+        {
+            "type": "order_update",
+            "data": {
+                "type": f"order.{event_type}",
+                "order_id": order.order_id,
+                "instrument": order.instrument,
+                "entry_price": float(order.entry_price),
+                "status": order.status,
+            },
+        },
+    )
