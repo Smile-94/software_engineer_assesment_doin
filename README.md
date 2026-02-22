@@ -139,3 +139,70 @@ and
 
 - Click on the Connect button.
 
+### Connect to WebHook
+The following API endpoint is designed to receive raw trading signals (plain text) via webhooks, authenticate them using an API Key, and queue them for asynchronous processing.
+
+- ** Features: **
+
+  - Receive raw trading signals via webhooks.
+  - Authenticate signals using an API Key.
+  - Queue signals for asynchronous processing.
+
+#### API Specification
+- Endpoint: 
+```bash
+https://localhost:8000/api/v1/signals/parse/
+```
+- Method: POST
+
+- Headers:
+
+  - Content-Type: text/plain
+  - X-API-KEY: your-api-key
+
+- Body:
+
+  - Message: Raw trading signal (plain text)
+  ```bash
+  BUY EURUSD [@1.0860 - Optional]
+  SL 1.0850
+  TP 1.0890
+  ```
+
+### Response
+The response will be a JSON object with the following structure:
+
+- ** Status Codes: **
+
+  - 200 OK: Signal received and processed successfully.
+  - 400 Bad Request: Invalid or missing request parameters.
+  - 500 Internal Server Error: An error occurred while processing the request.
+
+- ** Response Body: **
+
+  - Message: Signal received and processed successfully.
+  - Info: Signal received and processed successfully.
+
+### Example
+
+- ** Request: **
+
+  - Headers:
+
+    - Content-Type: text/plain
+    - X-API-KEY: your-api-key
+
+  - Body:
+
+    - Message: BUY EURUSD [@1.0860 - Optional]
+    - SL 1.0850
+    - TP 1.0890
+
+- ** Response: **
+
+  - Status Code: 200 OK
+
+  - Response Body:
+
+    - Message: Signal received and processed successfully.
+    - Info: Signal received and processed successfully.
