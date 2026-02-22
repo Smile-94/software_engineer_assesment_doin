@@ -4,9 +4,24 @@ info:
   seq: 1
 
 http:
-  method: GET
-  url: "{{baseUrl"
-  auth: inherit
+  method: POST
+  url: "{{baseUrl}}/broker/accounts/"
+  headers:
+    - name: X-Device-ID
+      value: "{{deviceId}}"
+    - name: X-Browser-Fingerprint
+      value: "{{browserFingerPrint}}"
+  body:
+    type: json
+    data: |-
+      {
+        "account_name": "broker1",
+        "account_id": "BRK21102223",
+        "api_key": "adjfjsdlkfjlkasdjfljsdlfdkfsdkjfksdj12345@"
+      }
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
 
 settings:
   encodeUrl: true

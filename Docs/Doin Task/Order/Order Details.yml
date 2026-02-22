@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/order/?field_list=id, order_id, active_status, action&action=BUY"
+  url: "{{baseUrl}}/order/1/?field_list=id, order_id, action,order_history"
   headers:
     - name: X-Device-ID
       value: "{{deviceId}}"
@@ -13,22 +13,7 @@ http:
       value: "{{browserFingerPrint}}"
   params:
     - name: field_list
-      value: id, order_id, active_status, action
-      type: query
-    - name: active_status
-      value: inactive
-      type: query
-      disabled: true
-    - name: from_date
-      value: 2025-10-12
-      type: query
-      disabled: true
-    - name: to_date
-      value: 2025-10-12
-      type: query
-      disabled: true
-    - name: action
-      value: BUY
+      value: id, order_id, action,order_history
       type: query
   auth:
     type: bearer
