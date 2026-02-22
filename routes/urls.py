@@ -4,6 +4,7 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from apps.broker import urls as broker_urls
+from apps.common import urls as common_urls
 from apps.order import urls as order_urls
 from apps.user import urls as user_urls
 from config.django.security import security_config
@@ -16,6 +17,7 @@ urlpatterns += [
     path("api/v1/user/", include(user_urls)),
     path("api/v1/broker/", include(broker_urls)),
     path("api/v1/order/", include(order_urls)),
+    path("api/v1/", include(common_urls)),
 ]
 
 if security_config.DEBUG:
