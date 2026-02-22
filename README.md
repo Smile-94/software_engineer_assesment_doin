@@ -73,11 +73,6 @@ poetry run python manage.py makemigrations
 poetry run python manage.py migrate
 ```
 
-### Run the Project
-
-```zsh
-poetry run python manage.py runserver 0.0.0.0:8000
-```
 
 ### Run the Project
 
@@ -115,7 +110,6 @@ Doin Task.json
 This project includes real-time activity logging using Django Channels and WebSockets. All system-wide events such as order simulates, webhook parsed invalid signals, and order updates are sent to clients in real time.
 
 ```bash
-    The WebSocket endpoint is:
     ws://localhost:8000/ws/signals/invalid/
     ws://localhost:8000/ws/orders/
 ```

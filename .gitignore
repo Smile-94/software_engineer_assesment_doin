@@ -40,8 +40,8 @@ media/
 # ============================================================================
 # Environment variables (SECURITY CRITICAL)
 # ============================================================================
-.env
-.env.*
+!.env
+!.env.*
 !.env.example
 
 # Allow environment directory
@@ -49,8 +49,8 @@ media/
 !_environment/**/
 
 # Ignore real env files
-# _environment/.env
-# _environment/.env.*
+! _environment/.env
+! _environment/.env.*
 # Allow templates
 !_environment/.env.example
 
